@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, FormEvent } from 'react'
 
 import logo from './assets/logo.png'
 
@@ -16,20 +16,55 @@ interface PokeProps {
 }
 
 function App() {
+  const [pokemons, setPokemon] = useState<PokeProps[]>([])
   const [randomPokemon, setRandomPokemon] = useState<PokeProps[]>([])
+  const [input, setInput] = useState('')
 
-  // const img = randomPokemon.sprites.front_default
+  // console.log(input)
 
-  async function loadRandomPokemon() {
-    fetch(`https://pokeapi.co/api/v2/pokemon/6`)
+  // const img = pokemons.sprites.front_default
+
+  async function loadSelectedPokemon(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`)
       .then((response) => response.json())
       .then((data) => {
-        setRandomPokemon([...randomPokemon, data])
+        setPokemon([...pokemons, data])
       })
+  }
+
+  function randomNumber() {
+    return Math.floor(Math.random() * 10)
+  }
+  // randomNumber()
+
+  async function loadRandomPokemon() {
+    await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber()}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log(data)
+        setRandomPokemon([...randomPokemon, data])
+        // console.log('>>>>', randomPokemon[0])
+        // console.log(randomPokemon[0].name)
+      })
+  }
+
+  function comparePokemon(key, value, index) {
+    console.log(`${key} : ${value} : ${index}`)
+
+    // if(randomPokemon[0].id === )
+  }
+
+  if (randomPokemon.length !== 0) {
+    Object.entries(randomPokemon[0]).map((key, value, index) =>
+      comparePokemon(key[0], key[1], value),
+    )
   }
 
   useEffect(() => {
     loadRandomPokemon()
+    // loadSelectedPokemon()
+    // comparePokemon()
   }, [])
 
   return (
@@ -44,12 +79,19 @@ function App() {
         Qual é o Pokémon?
       </h1>
 
-      <input
-        className="max-w-[400px] w-full px-4 py-3 my-4 outline-none rounded-lg placeholder:text-purple-200 "
-        placeholder="Escreva aqui..."
-      />
+      <form
+        onSubmit={(e) => loadSelectedPokemon(e)}
+        className="max-w-[400px] w-full"
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="max-w-[400px] w-full px-4 py-3 my-4 outline-none rounded-lg placeholder:text-purple-200 "
+          placeholder="Escreva aqui..."
+        />
+      </form>
       <div className="flex flex-col gap-3 px-2 my-12 overflow-auto max-w-[685px] w-full max-h-[500px] h-fulls">
-        {randomPokemon.map((pokemon) => (
+        {pokemons.map((pokemon) => (
           <PokeCard
             key={pokemon.id}
             name={pokemon.name}
