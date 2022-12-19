@@ -15,14 +15,112 @@ interface PokeProps {
   weight: number
 }
 
+interface pokeDataProps {
+  name: string
+  sprite: string
+  types: {
+    primary: {
+      name: string
+      isTypeOfPokemon: boolean
+    }
+    secondary: {
+      name: string
+      isTypeOfPokemon: boolean
+    }
+  }
+  height: {
+    value: number
+    diference: 'low' | 'high' | 'exact'
+    isHeightOfPokemon: boolean
+  }
+  weight: {
+    value: number
+    diference: 'low' | 'high' | 'exact'
+    isWeightOfPokemon: boolean
+  }
+}
+
 function App() {
   const [pokemons, setPokemon] = useState<PokeProps[]>([])
-  const [randomPokemon, setRandomPokemon] = useState<PokeProps[]>([])
+  const [randomPokemon, setRandomPokemon] = useState<PokeProps>()
   const [input, setInput] = useState('')
+  const [sortedNumber, setSortedNumber] = useState(
+    Math.floor(Math.random() * 10),
+  )
+  const [pokeCardInfo, setPokeCardInfo] = useState<pokeDataProps[]>([])
+  pokemons.reverse()
 
-  // console.log(input)
+  function comparePokemon() {
+    const poke = pokemons[pokemons.length - 1]
+    const pokeData: pokeDataProps = {
+      name: '',
+      sprite: '',
+      types: {
+        primary: {
+          name: '',
+          isTypeOfPokemon: false,
+        },
+        secondary: {
+          name: '',
+          isTypeOfPokemon: false,
+        },
+      },
+      height: {
+        value: 0,
+        diference: 'low',
+        isHeightOfPokemon: false,
+      },
+      weight: {
+        value: 0,
+        diference: 'low',
+        isWeightOfPokemon: false,
+      },
+    }
 
-  // const img = pokemons.sprites.front_default
+    if (poke?.name !== undefined && poke?.name === randomPokemon?.name) {
+      console.log('You Win!!', pokeCardInfo)
+    } else if (poke?.name !== undefined && randomPokemon?.name !== undefined) {
+      pokeData.name = poke.name
+      pokeData.sprite = poke.sprites.front_default
+      pokeData.height.value = poke.height
+      pokeData.weight.value = poke.weight
+
+      if (poke.types.length > 1) {
+        pokeData.types.primary.name = poke.types[0].type.name
+        pokeData.types.secondary.name = poke.types[1].type.name
+      } else {
+        pokeData.types.primary.name = poke.types[0].type.name
+        pokeData.types.secondary.name = poke.types[0].type.name
+      }
+
+      if (poke.height > randomPokemon?.height) {
+        pokeData.height.diference = 'low'
+      } else if (poke.height < randomPokemon?.height) {
+        pokeData.height.diference = 'high'
+      } else {
+        pokeData.height.diference = 'exact'
+      }
+
+      if (poke.weight > randomPokemon?.weight) {
+        pokeData.weight.diference = 'low'
+      } else if (poke.weight < randomPokemon?.weight) {
+        pokeData.weight.diference = 'high'
+      } else {
+        pokeData.weight.diference = 'exact'
+      }
+    }
+
+    setPokeCardInfo([...pokeCardInfo, pokeData])
+
+    console.log(
+      'randomPokemon:',
+      randomPokemon?.name,
+      'current:',
+      pokemons[pokemons.length - 1]?.name,
+      'pokedata',
+      pokeData,
+    )
+  }
 
   async function loadSelectedPokemon(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -31,41 +129,30 @@ function App() {
       .then((data) => {
         setPokemon([...pokemons, data])
       })
+    setInput('')
   }
-
-  function randomNumber() {
-    return Math.floor(Math.random() * 10)
-  }
-  // randomNumber()
 
   async function loadRandomPokemon() {
-    await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber()}`)
+    await fetch(`https://pokeapi.co/api/v2/pokemon/${sortedNumber}`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data)
-        setRandomPokemon([...randomPokemon, data])
-        // console.log('>>>>', randomPokemon[0])
-        // console.log(randomPokemon[0].name)
+        setRandomPokemon(data)
+        // console.log('randomPokemon', randomPokemon)
       })
   }
 
-  function comparePokemon(key, value, index) {
-    console.log(`${key} : ${value} : ${index}`)
-
-    // if(randomPokemon[0].id === )
-  }
-
-  if (randomPokemon.length !== 0) {
-    Object.entries(randomPokemon[0]).map((key, value, index) =>
-      comparePokemon(key[0], key[1], value),
-    )
-  }
-
+  // if (randomPokemon.length !== 0) {
+  //   Object.entries(randomPokemon[0]).map((key, value, index) =>
+  //     comparePokemon(key[0], key[1], value),
+  //   )
+  // }
   useEffect(() => {
     loadRandomPokemon()
-    // loadSelectedPokemon()
-    // comparePokemon()
-  }, [])
+  }, [randomPokemon])
+
+  useEffect(() => {
+    comparePokemon()
+  }, [pokemons])
 
   return (
     <div className="bg-purple-900 w-screen h-screen flex flex-col justify-start items-center">

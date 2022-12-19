@@ -1,4 +1,4 @@
-import { ArrowCircleDown } from 'phosphor-react'
+import { ArrowCircleDown, ArrowCircleUp } from 'phosphor-react'
 
 interface PokeProps {
   name: string
@@ -53,10 +53,7 @@ export function PokeCard({ name, sprites, types, height, weight }: PokeProps) {
 
         <div className="bg-green w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center relative">
           <div className="bg-gray-100 rounded-full absolute right-1 top-[-6px]">
-            <ArrowCircleDown
-              size={20}
-              className="text-purple-900 font-medium"
-            />
+            <ArrowCircleUp size={20} className="text-purple-900 font-medium" />
           </div>
           <span className="text-white font-bold text-xl">
             {(weight * 10) / 100}
