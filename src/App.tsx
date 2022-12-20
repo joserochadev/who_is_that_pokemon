@@ -15,7 +15,7 @@ interface PokeProps {
   weight: number
 }
 
-interface pokeDataProps {
+export interface PokeDataProps {
   name: string
   sprite: string
   types: {
@@ -45,14 +45,13 @@ function App() {
   const [randomPokemon, setRandomPokemon] = useState<PokeProps>()
   const [input, setInput] = useState('')
   const [sortedNumber, setSortedNumber] = useState(
-    Math.floor(Math.random() * 10),
+    Math.floor(Math.random() * 250 + 1),
   )
-  const [pokeCardInfo, setPokeCardInfo] = useState<pokeDataProps[]>([])
-  pokemons.reverse()
+  const [pokeCardInfo, setPokeCardInfo] = useState<PokeDataProps[]>([])
 
   function comparePokemon() {
     const poke = pokemons[pokemons.length - 1]
-    const pokeData: pokeDataProps = {
+    const pokeData: PokeDataProps = {
       name: '',
       sprite: '',
       types: {
@@ -77,9 +76,7 @@ function App() {
       },
     }
 
-    if (poke?.name !== undefined && poke?.name === randomPokemon?.name) {
-      console.log('You Win!!', pokeCardInfo)
-    } else if (poke?.name !== undefined && randomPokemon?.name !== undefined) {
+    if (poke?.name !== undefined && randomPokemon?.name !== undefined) {
       pokeData.name = poke.name
       pokeData.sprite = poke.sprites.front_default
       pokeData.height.value = poke.height
@@ -88,9 +85,23 @@ function App() {
       if (poke.types.length > 1) {
         pokeData.types.primary.name = poke.types[0].type.name
         pokeData.types.secondary.name = poke.types[1].type.name
+
+        if (poke.types[0].type.name === randomPokemon.types[0].type.name) {
+          pokeData.types.primary.isTypeOfPokemon = true
+        }
+        if (poke.types[1].type.name === randomPokemon.types[1].type.name) {
+          pokeData.types.secondary.isTypeOfPokemon = true
+        }
       } else {
         pokeData.types.primary.name = poke.types[0].type.name
         pokeData.types.secondary.name = poke.types[0].type.name
+
+        if (poke.types[0].type.name === randomPokemon.types[0].type.name) {
+          pokeData.types.primary.isTypeOfPokemon = true
+        }
+        if (poke.types[0].type.name === randomPokemon.types[1]?.type.name) {
+          pokeData.types.secondary.isTypeOfPokemon = true
+        }
       }
 
       if (poke.height > randomPokemon?.height) {
@@ -108,18 +119,32 @@ function App() {
       } else {
         pokeData.weight.diference = 'exact'
       }
+
+      setPokeCardInfo([...pokeCardInfo, pokeData])
+
+      if (poke?.name !== undefined && poke?.name === randomPokemon?.name) {
+        setTimeout(() => {
+          alert('You Win!!')
+        }, 200)
+
+        console.log('You Win!!', pokeCardInfo)
+      }
     }
 
-    setPokeCardInfo([...pokeCardInfo, pokeData])
+    setTimeout(() => {
+      // definindo scroll padrão na parte de baixo
+      const pokeContainer = document.getElementsByClassName('pokeContainer')[0]
+      pokeContainer.scrollTop = pokeContainer.scrollHeight
+    }, 100)
 
-    console.log(
-      'randomPokemon:',
-      randomPokemon?.name,
-      'current:',
-      pokemons[pokemons.length - 1]?.name,
-      'pokedata',
-      pokeData,
-    )
+    // console.log(
+    //   'randomPokemon:',
+    //   randomPokemon?.name,
+    //   'current:',
+    //   pokemons[pokemons.length - 1]?.name,
+    //   'pokedata',
+    //   pokeData,
+    // )
   }
 
   async function loadSelectedPokemon(e: FormEvent<HTMLFormElement>) {
@@ -137,15 +162,9 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setRandomPokemon(data)
-        // console.log('randomPokemon', randomPokemon)
       })
   }
 
-  // if (randomPokemon.length !== 0) {
-  //   Object.entries(randomPokemon[0]).map((key, value, index) =>
-  //     comparePokemon(key[0], key[1], value),
-  //   )
-  // }
   useEffect(() => {
     loadRandomPokemon()
   }, [randomPokemon])
@@ -177,12 +196,12 @@ function App() {
           placeholder="Escreva aqui..."
         />
       </form>
-      <div className="flex flex-col gap-3 px-2 my-12 overflow-auto max-w-[685px] w-full max-h-[500px] h-fulls">
-        {pokemons.map((pokemon) => (
+      <div className="pokeContainer flex flex-col gap-3 px-2 my-12 overflow-y-auto overscroll-contain  max-w-[685px] w-full max-h-[500px] h-fulls">
+        {pokeCardInfo.map((pokemon) => (
           <PokeCard
-            key={pokemon.id}
+            key={pokemon.name + Math.random() * 100}
             name={pokemon.name}
-            sprites={pokemon.sprites.front_default}
+            sprite={pokemon.sprite}
             types={pokemon.types}
             height={pokemon.height}
             weight={pokemon.weight}
