@@ -10,7 +10,18 @@ interface PokeProps {
   sprites: {
     front_default: string
   }
-  types: string[]
+  types: [
+    {
+      type: {
+        name: string
+      }
+    },
+    {
+      type: {
+        name: string
+      }
+    },
+  ]
   height: number
   weight: number
 }
@@ -31,12 +42,10 @@ export interface PokeDataProps {
   height: {
     value: number
     diference: 'low' | 'high' | 'exact'
-    isHeightOfPokemon: boolean
   }
   weight: {
     value: number
     diference: 'low' | 'high' | 'exact'
-    isWeightOfPokemon: boolean
   }
 }
 
@@ -67,12 +76,10 @@ function App() {
       height: {
         value: 0,
         diference: 'low',
-        isHeightOfPokemon: false,
       },
       weight: {
         value: 0,
         diference: 'low',
-        isWeightOfPokemon: false,
       },
     }
 
@@ -89,7 +96,7 @@ function App() {
         if (poke.types[0].type.name === randomPokemon.types[0].type.name) {
           pokeData.types.primary.isTypeOfPokemon = true
         }
-        if (poke.types[1].type.name === randomPokemon.types[1].type.name) {
+        if (poke.types[1]?.type.name === randomPokemon.types[1]?.type.name) {
           pokeData.types.secondary.isTypeOfPokemon = true
         }
       } else {
@@ -124,10 +131,8 @@ function App() {
 
       if (poke?.name !== undefined && poke?.name === randomPokemon?.name) {
         setTimeout(() => {
-          alert('You Win!!')
+          alert('VOCÊ VENCEU!!')
         }, 200)
-
-        console.log('You Win!!', pokeCardInfo)
       }
     }
 
@@ -149,12 +154,20 @@ function App() {
 
   async function loadSelectedPokemon(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPokemon([...pokemons, data])
-      })
-    setInput('')
+    try {
+      await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${input.toLocaleLowerCase()}`,
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setPokemon([...pokemons, data])
+        })
+      setInput('')
+    } catch (erro) {
+      alert(
+        'POKÉMON NÃO ENCONTRADO!! \nVerifique se digitou corretamente e so aceitamos pokemons das duas primeiras gerações.',
+      )
+    }
   }
 
   async function loadRandomPokemon() {
