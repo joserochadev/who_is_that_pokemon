@@ -140,7 +140,7 @@ function App() {
       // definindo scroll padrão na parte de baixo
       const pokeContainer = document.getElementsByClassName('pokeContainer')[0]
       pokeContainer.scrollTop = pokeContainer.scrollHeight
-    }, 100)
+    }, 200)
 
     // console.log(
     //   'randomPokemon:',
@@ -189,7 +189,7 @@ function App() {
   return (
     <div className="bg-purple-900 w-screen h-screen flex flex-col justify-start items-center">
       <img
-        className="w-[220px] my-16"
+        className="w-[180px] mt-8 mb-6"
         src={logo}
         alt="logo onde está escrito who's that pokémon?"
       />
@@ -200,16 +200,16 @@ function App() {
 
       <form
         onSubmit={(e) => loadSelectedPokemon(e)}
-        className="max-w-[400px] w-full"
+        className="max-w-[400px] w-full min-[390px]:w-4/5"
       >
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="max-w-[400px] w-full px-4 py-3 my-4 outline-none rounded-lg placeholder:text-purple-200 "
+          className="max-w-[400px] w-full px-4 py-3 mt-4 outline-none rounded-lg placeholder:text-purple-200 "
           placeholder="Escreva aqui..."
         />
       </form>
-      <div className="pokeContainer flex flex-col gap-3 px-2 my-12 overflow-y-auto overscroll-contain  max-w-[685px] w-full max-h-[500px] h-fulls">
+      <div className="pokeContainer flex flex-col gap-3 px-2 mt-4 mb-2 overflow-y-auto overscroll-contain  max-w-2xl w-full max-h-[500px] h-fulls max-[412px]:overflow-y-auto">
         {pokeCardInfo.map((pokemon) => (
           <PokeCard
             key={pokemon.name + Math.random() * 100}

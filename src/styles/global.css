@@ -16,5 +16,12 @@
   border-radius: 10px;
 }
 
+@media (max-width: 412px) {
+  /* width */
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
